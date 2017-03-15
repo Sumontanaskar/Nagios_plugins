@@ -1,0 +1,34 @@
+#!/bin/bash
+TX=$( vnstat -d | grep '/'| tail -1 | awk '{print $5$6}' )
+RX=$( vnstat -d | grep '/'| tail -1 | awk '{print $2$3}' )
+SUM=$( vnstat -d | grep '/'| tail -1 | awk '{print $8}'| awk -F. '{print $1}' )
+SUM_UNIT=$( vnstat -d | grep '/'| tail -1 | awk '{print $9}' )
+#rgument set
+First_args=$1
+
+
+#echo $1,$2,$3,$4
+
+#Buffer for warning, critical
+W=$2
+C=$4
+#echo $TX, $RX, $SUM
+
+output="Total Data Transfer: $SUM $SUM_UNIT |Transmit Data: $TX|Received Data: $RX"
+if [ $SUM -le $W ]
+then
+        echo "OK- $output"
+        exit 0
+elif [ $SUM -gt $W -a $SUM -le $C ]
+then
+        echo "WARNING- $output"
+        exit 1
+elif [ $SUM -gt $C ]
+then
+        echo "CRITICAL- $output"
+        exit 2
+else
+        echo "UNKNOWN- $output"
+        exit 3
+fi
+#data_x -w 8 -c 10
